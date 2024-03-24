@@ -42,11 +42,11 @@ func (d *DoublyLinkedList[T]) InsertAt(index int, v T) error {
 		d.tail = newNode
 	} else {
 		current := d.head
-		for i := 0; i < index-1; i++ {
+		for i := 1; i < index; i++ {
 			current = current.next
 		}
+		newNode.prev = current
 		newNode.next = current.next
-		current.next = newNode
 		current.next.prev = newNode
 		current.next = newNode
 	}
@@ -82,18 +82,61 @@ func (d *DoublyLinkedList[T]) Get(index int) (*Node[T], error) {
 	}
 	return current, nil
 }
+
+func (l *DoublyLinkedList[T]) AddElements(elements []struct {
+	index int
+	value T
+}) error {
+	for _, e := range elements {
+		if err := l.InsertAt(e.index, e.value); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (l *DoublyLinkedList[T]) PrintForward() string {
+	if l.size == 0 {
+		return ""
+	}
+	current := l.head
+	output := "HEAD"
+	for current != nil {
+		output = fmt.Sprintf("%s -> %v", output, current.value)
+		current = current.next
+	}
+
+	return fmt.Sprintf("%s -> NULL", output)
+}
+
+func (l *DoublyLinkedList[T]) PrintReverse() string {
+	if l.size == 0 {
+		return ""
+	}
+	current := l.tail
+	output := "NULL"
+	for current != nil {
+		output = fmt.Sprintf("%s <- %v", output, current.value)
+		current = current.prev
+	}
+	return fmt.Sprintf("%s <- HEAD", output)
+}
+
 func main() {
-	d := &DoublyLinkedList[string]{}
-	d.Append("thiri")
-	d.Append("lwin")
+	dl := &DoublyLinkedList[string]{}
+	//d.Append("thiri")
+	//d.Append("lwin")
 
-	d.InsertAt(1, "mary")
+	dl.InsertAt(0, "C")
+	dl.InsertAt(0, "A")
+	dl.InsertAt(1, "B")
+	// dl.InsertAt(3, "D")
 
-	data, err := d.Get(1)
+	d, err := dl.Get(1)
 	if err != nil {
 		fmt.Printf("Error :%s", err.Error())
 		return
 	}
-
-	fmt.Println("data :", *data)
+	fmt.Println("data >>", *d)
 }
